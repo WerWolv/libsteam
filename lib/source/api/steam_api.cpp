@@ -46,7 +46,7 @@ namespace steam::api {
             shortcut["icon"]                = "";
             shortcut["tags"]                = std::map<std::string, VDF::Value>{ };
 
-            shortcuts[std::to_string(nextShortcutId)] = shortcut;
+            shortcuts["shortcuts"][std::to_string(nextShortcutId)] = shortcut;
         }
 
         printf("%s\n", shortcuts.format().c_str());

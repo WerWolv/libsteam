@@ -34,22 +34,22 @@ namespace steam {
 
             [[nodiscard]]
             Value& operator[](const std::string &key) & {
-                return std::get<std::map<std::string, Value>>(content).at(key);
+                return std::get<std::map<std::string, Value>>(content)[key];
             }
 
             [[nodiscard]]
             Value&& operator[](const std::string &key) && {
-                return std::move(std::get<std::map<std::string, Value>>(content).at(key));
+                return std::move(std::get<std::map<std::string, Value>>(content)[key]);
             }
 
             [[nodiscard]]
             Value& operator[](const char *key) & {
-                return std::get<std::map<std::string, Value>>(content).at(key);
+                return std::get<std::map<std::string, Value>>(content)[key];
             }
 
             [[nodiscard]]
             Value&& operator[](const char *key) && {
-                return std::move(std::get<std::map<std::string, Value>>(content).at(key));
+                return std::move(std::get<std::map<std::string, Value>>(content)[key]);
             }
 
             auto& operator=(const std::string &value) {
@@ -99,7 +99,7 @@ namespace steam {
 
         [[nodiscard]]
         Value& operator[](const char *key) {
-            return this->m_content.at(key);
+            return this->m_content[key];
         }
 
         [[nodiscard]]
@@ -109,7 +109,7 @@ namespace steam {
 
         [[nodiscard]]
         Value& operator[](const std::string &key) {
-            return this->m_content.at(key);
+            return this->m_content[key];
         }
 
         [[nodiscard]]

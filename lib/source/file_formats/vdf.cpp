@@ -220,7 +220,11 @@ namespace steam {
                     },
                     [&](const std::map<std::string, VDF::Value>& x) {
                         result += "{";
-                        result += formatImpl(x, indent + 4).substr(1);
+                        {
+                            auto content = formatImpl(x, indent + 4);
+                            if (!content.empty())
+                                result += content.substr(1);
+                        }
                         result += fmt::format("\n{0: >{1}}}}", "", indent);
                     }
             }, value.content);
