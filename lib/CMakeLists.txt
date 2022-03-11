@@ -6,6 +6,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 add_library(libsteam SHARED
         source/file_formats/vdf.cpp
+        source/file_formats/keyvalues.cpp
 
         source/helpers/file.cpp
 )
