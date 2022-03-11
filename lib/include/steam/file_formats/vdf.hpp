@@ -47,6 +47,16 @@ namespace steam {
             }
 
             [[nodiscard]]
+            std::map<std::string, Value>& set() {
+                return std::get<std::map<std::string, Value>>(content);
+            }
+
+            [[nodiscard]]
+            const std::map<std::string, Value>& set() const {
+                return std::get<std::map<std::string, Value>>(content);
+            }
+
+            [[nodiscard]]
             Value& operator[](const std::string &key) & {
                 return std::get<std::map<std::string, Value>>(content).at(key);
             }
@@ -166,7 +176,7 @@ namespace steam {
         std::map<std::string, Value> m_content;
     };
 
-    bool operator==(u8 byte, VDF::Type type) {
+    static inline bool operator==(u8 byte, VDF::Type type) {
         return static_cast<VDF::Type>(byte) == type;
     }
 

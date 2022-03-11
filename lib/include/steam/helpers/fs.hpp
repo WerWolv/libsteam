@@ -48,6 +48,14 @@ namespace steam::fs {
         else return size;
     }
 
+    static inline std::fs::path getHomeDirectory() {
+        return std::getenv("HOME");
+    }
+
+    static inline std::fs::path getSteamDirectory() {
+        return getHomeDirectory() / ".steam" / "steam";
+    }
+
     bool isPathWritable(const std::fs::path &path);
 
 }

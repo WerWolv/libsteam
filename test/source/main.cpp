@@ -1,25 +1,13 @@
-#include <steam/file_formats/vdf.hpp>
-#include <steam/file_formats/keyvalues.hpp>
+#include <steam/api/steam_api.hpp>
 
 int main() {
 
-    {
-        auto vdfData = steam::fs::File(std::fs::current_path() / "shortcuts.vdf", steam::fs::File::Mode::Read).readBytes();
-
-        auto parsedInput = steam::VDF(vdfData);
-        auto parsedOutput = steam::VDF(parsedInput.dump());
-
-        printf("VDF Input == Output: %d\n", parsedInput == parsedOutput);
+    auto users = steam::api::User::getUsers();
+    for (const auto &user : users) {
+        printf("%d -> %s\n", user.getId(), user.getName().c_str());
     }
 
-    {
-        auto kvData = steam::fs::File(std::fs::current_path() / "localconfig.vdf", steam::fs::File::Mode::Read).readString();
-
-        auto parsedInput = steam::KeyValues(kvData);
-        auto parsedOutput = steam::KeyValues(parsedInput.dump());
-
-        printf("KeyValue Input == Output: %d\n", parsedInput == parsedOutput);
-    }
+    steam::api::addGameShortcut(users.front(), "Hello World", "/home/deck/", "Test Options");
 
     return EXIT_SUCCESS;
 }

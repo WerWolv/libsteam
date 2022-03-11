@@ -79,6 +79,16 @@ namespace steam {
             bool operator!=(const Value &other) const {
                 return this->content != other.content;
             }
+
+            [[nodiscard]]
+            bool contains(const std::string &key) {
+                auto set = std::get_if<std::map<std::string, Value>>(&this->content);
+                if (set == nullptr)
+                    return false;
+
+                return set->contains(key);
+            }
+
         };
 
         struct KeyValuePair {
@@ -119,6 +129,11 @@ namespace steam {
 
         [[nodiscard]]
         std::string dump() const;
+
+        [[nodiscard]]
+        bool contains(const std::string &key) {
+            return this->m_content.contains(key);
+        }
 
         bool operator==(const KeyValues &other) const {
             return this->m_content == other.m_content;
