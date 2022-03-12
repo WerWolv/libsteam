@@ -24,7 +24,7 @@ namespace steam {
         using Set = std::map<std::string, Value>;
 
         struct Value {
-            std::variant<std::string, Set> content;
+            std::variant<Set, std::string> content;
 
             [[nodiscard]]
             std::string& string() {
