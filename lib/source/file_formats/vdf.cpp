@@ -85,7 +85,7 @@ namespace steam {
             advance += usedBytes;
         }
 
-        result.value.content = std::map<std::string, VDF::Value>{};
+        result.value.content = VDF::Set{};
 
         while (true) {
             if (advance >= data.size())
@@ -101,7 +101,7 @@ namespace steam {
                 return { { }, 0 };
 
             advance += usedBytes;
-            std::get<std::map<std::string, VDF::Value>>(result.value.content).emplace(element.key, element.value);
+            std::get<VDF::Set>(result.value.content).emplace(element.key, element.value);
         }
 
         return { result, advance };
@@ -134,7 +134,7 @@ namespace steam {
     }
 
     std::map<std::string, VDF::Value> VDF::parse(const std::vector<u8> &data) {
-        std::map<std::string, Value> result;
+        Set result;
 
         u64 offset = 0;
         while (offset < data.size()) {
@@ -178,7 +178,7 @@ namespace steam {
         result.push_back((content >> 24) & 0xFF);
     }
 
-    void dumpSet(const std::string &setKey, const std::map<std::string, VDF::Value> &content, std::vector<u8> &result) {
+    void dumpSet(const std::string &setKey, const VDF::Set &content, std::vector<u8> &result) {
         dumpKey(VDF::Type::Set, setKey, result);
 
         for (const auto &[key, value] : content) {
@@ -189,7 +189,7 @@ namespace steam {
                 [&, key = key](const u32 &integer) {
                     dumpInteger(key, integer, result);
                 },
-                [&, key = key](const std::map<std::string, VDF::Value> &set) {
+                [&, key = key](const VDF::Set &set) {
                     dumpSet(key, set, result);
                 }
             }, value.content);
@@ -206,7 +206,7 @@ namespace steam {
         return result;
     }
 
-    std::string formatImpl(const std::map<std::string, VDF::Value> &content, u32 indent) {
+    std::string formatImpl(const VDF::Set &content, u32 indent) {
         std::string result;
 
         for (auto &[key, value] : content) {
@@ -218,7 +218,7 @@ namespace steam {
                     [&](const steam::u32& x) {
                         result += fmt::format("{0}", x);
                     },
-                    [&](const std::map<std::string, VDF::Value>& x) {
+                    [&](const VDF::Set& x) {
                         result += "{";
                         {
                             auto content = formatImpl(x, indent + 4);

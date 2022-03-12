@@ -65,8 +65,8 @@ namespace steam {
         return advance;
     }
 
-    std::pair<std::map<std::string, KeyValues::Value>, size_t> parseSet(std::u32string_view data) {
-        std::map<std::string, KeyValues::Value> result;
+    std::pair<KeyValues::Set, size_t> parseSet(std::u32string_view data) {
+        KeyValues::Set result;
         size_t advance = 0;
 
         if (!data.starts_with('{'))
@@ -128,11 +128,11 @@ namespace steam {
         return { result, advance };
     }
 
-    std::map<std::string, KeyValues::Value> KeyValues::parse(const std::string &data) {
+    KeyValues::Set KeyValues::parse(const std::string &data) {
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
         const auto convertedData = converter.from_bytes(data);
 
-        std::map<std::string, KeyValues::Value> result;
+        KeyValues::Set result;
         size_t advance = 0;
 
         while (advance < convertedData.size()) {
@@ -169,7 +169,7 @@ namespace steam {
         return fmt::format("\"{0}\"", converter.to_bytes(result));
     }
 
-    std::string dumpSet(const std::map<std::string, KeyValues::Value> &set, u32 indent) {
+    std::string dumpSet(const KeyValues::Set &set, u32 indent) {
         std::string result;
 
         result += fmt::format("{0: >{1}}{{\n", "", indent);
@@ -192,7 +192,7 @@ namespace steam {
             [](const std::string &value) {
                 return fmt::format("\t\t{0}\n", dumpString(value));
             },
-            [&indent](const std::map<std::string, KeyValues::Value> &value) {
+            [&indent](const KeyValues::Set &value) {
                 return fmt::format("\n{0}\n", dumpSet(value, indent));
             }
         }, value.content);

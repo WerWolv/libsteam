@@ -23,6 +23,10 @@ namespace steam {
             EndSet = 0x08
         };
 
+        struct Value;
+
+        using Set = std::map<std::string, Value>;
+
         struct Value {
             std::variant<std::string, u32, std::map<std::string, Value>> content;
 
@@ -47,33 +51,33 @@ namespace steam {
             }
 
             [[nodiscard]]
-            std::map<std::string, Value>& set() {
-                return std::get<std::map<std::string, Value>>(content);
+            Set& set() {
+                return std::get<Set>(content);
             }
 
             [[nodiscard]]
-            const std::map<std::string, Value>& set() const {
-                return std::get<std::map<std::string, Value>>(content);
+            const Set& set() const {
+                return std::get<Set>(content);
             }
 
             [[nodiscard]]
             Value& operator[](const std::string &key) & {
-                return std::get<std::map<std::string, Value>>(content)[key];
+                return std::get<Set>(content)[key];
             }
 
             [[nodiscard]]
             Value&& operator[](const std::string &key) && {
-                return std::move(std::get<std::map<std::string, Value>>(content)[key]);
+                return std::move(std::get<Set>(content)[key]);
             }
 
             [[nodiscard]]
             Value& operator[](const char *key) & {
-                return std::get<std::map<std::string, Value>>(content)[key];
+                return std::get<Set>(content)[key];
             }
 
             [[nodiscard]]
             Value&& operator[](const char *key) && {
-                return std::move(std::get<std::map<std::string, Value>>(content)[key]);
+                return std::move(std::get<Set>(content)[key]);
             }
 
             auto& operator=(u32 value) {
@@ -86,7 +90,7 @@ namespace steam {
                 return *this;
             }
 
-            auto& operator=(const std::map<std::string, Value> &value) {
+            auto& operator=(const Set &value) {
                 this->content = value;
                 return *this;
             }
@@ -147,12 +151,12 @@ namespace steam {
         }
 
         [[nodiscard]]
-        std::map<std::string, Value>& get() {
+        Set& get() {
             return this->m_content;
         }
 
         [[nodiscard]]
-        const std::map<std::string, Value>& get() const {
+        const Set& get() const {
             return this->m_content;
         }
 
@@ -171,9 +175,9 @@ namespace steam {
         }
 
     private:
-        std::map<std::string, Value> parse(const std::vector<u8> &data);
+        Set parse(const std::vector<u8> &data);
 
-        std::map<std::string, Value> m_content;
+        Set m_content;
     };
 
     static inline bool operator==(u8 byte, VDF::Type type) {

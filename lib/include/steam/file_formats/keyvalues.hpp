@@ -19,12 +19,26 @@ namespace steam {
         explicit KeyValues(const std::fs::path &path) : m_content(parse(fs::File(path, fs::File::Mode::Read).readString())) { }
         explicit KeyValues(const std::string &content) : m_content(parse(content)) { }
 
+        struct Value;
+
+        using Set = std::map<std::string, Value>;
+
         struct Value {
-            std::variant<std::string, std::map<std::string, Value>> content;
+            std::variant<std::string, Set> content;
 
             [[nodiscard]]
             std::string& string() {
                 return std::get<std::string>(content);
+            }
+
+            [[nodiscard]]
+            const KeyValues::Set& set() const {
+                return std::get<KeyValues::Set>(content);
+            }
+
+            [[nodiscard]]
+            KeyValues::Set& set() {
+                return std::get<KeyValues::Set>(content);
             }
 
             [[nodiscard]]
@@ -34,22 +48,22 @@ namespace steam {
 
             [[nodiscard]]
             Value& operator[](const std::string &key) & {
-                return std::get<std::map<std::string, Value>>(content)[key];
+                return std::get<Set>(content)[key];
             }
 
             [[nodiscard]]
             Value&& operator[](const std::string &key) && {
-                return std::move(std::get<std::map<std::string, Value>>(content)[key]);
+                return std::move(std::get<Set>(content)[key]);
             }
 
             [[nodiscard]]
             Value& operator[](const char *key) & {
-                return std::get<std::map<std::string, Value>>(content)[key];
+                return std::get<Set>(content)[key];
             }
 
             [[nodiscard]]
             Value&& operator[](const char *key) && {
-                return std::move(std::get<std::map<std::string, Value>>(content)[key]);
+                return std::move(std::get<Set>(content)[key]);
             }
 
             auto& operator=(const std::string &value) {
@@ -57,7 +71,7 @@ namespace steam {
                 return *this;
             }
 
-            auto& operator=(const std::map<std::string, Value> &value) {
+            auto& operator=(const Set &value) {
                 this->content = value;
                 return *this;
             }
@@ -82,7 +96,7 @@ namespace steam {
 
             [[nodiscard]]
             bool contains(const std::string &key) {
-                auto set = std::get_if<std::map<std::string, Value>>(&this->content);
+                auto set = std::get_if<Set>(&this->content);
                 if (set == nullptr)
                     return false;
 
@@ -118,12 +132,12 @@ namespace steam {
         }
 
         [[nodiscard]]
-        std::map<std::string, Value>& get() {
+        Set& get() {
             return this->m_content;
         }
 
         [[nodiscard]]
-        const std::map<std::string, Value>& get() const {
+        const Set& get() const {
             return this->m_content;
         }
 
@@ -144,8 +158,8 @@ namespace steam {
         }
 
     private:
-        std::map<std::string, Value> parse(const std::string &data);
-        std::map<std::string, Value> m_content;
+        Set parse(const std::string &data);
+        Set m_content;
     };
 
 }
