@@ -23,3 +23,5 @@ set_target_properties(libsteam
 target_link_libraries(libsteam PUBLIC fmt::fmt)
 
 target_include_directories(libsteam PUBLIC include)
+
+install(TARGETS libsteam)
