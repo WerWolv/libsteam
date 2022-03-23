@@ -133,7 +133,7 @@ namespace steam {
         return { result, advance + 1 };
     }
 
-    std::map<std::string, VDF::Value> VDF::parse(const std::vector<u8> &data) {
+    VDF::Set VDF::parse(const std::vector<u8> &data) {
         Set result;
 
         u64 offset = 0;
@@ -143,7 +143,7 @@ namespace steam {
             if (bytesUsed == 0)
                 return { };
 
-            if (element.value.content.index() == 0)
+            if (element.key.empty())
                 break;
 
             offset += bytesUsed;
@@ -178,24 +178,30 @@ namespace steam {
         result.push_back((content >> 24) & 0xFF);
     }
 
+    void dumpElement(const std::string &key, const VDF::Value &value, std::vector<u8> &result);
+
     void dumpSet(const std::string &setKey, const VDF::Set &content, std::vector<u8> &result) {
         dumpKey(VDF::Type::Set, setKey, result);
 
         for (const auto &[key, value] : content) {
-            std::visit(overloaded {
-                [&, key = key](const std::string &string) {
-                    dumpString(key, string, result);
-                },
-                [&, key = key](const u32 &integer) {
-                    dumpInteger(key, integer, result);
-                },
-                [&, key = key](const VDF::Set &set) {
-                    dumpSet(key, set, result);
-                }
-            }, value.content);
+            dumpElement(key, value, result);
         }
 
         result.push_back(static_cast<u8>(VDF::Type::EndSet));
+    }
+
+    void dumpElement(const std::string &key, const VDF::Value &value, std::vector<u8> &result) {
+        std::visit(overloaded {
+                [&](const std::string &string) {
+                    dumpString(key, string, result);
+                },
+                [&](const u32 &integer) {
+                    dumpInteger(key, integer, result);
+                },
+                [&](const VDF::Set &set) {
+                    dumpSet(key, set, result);
+                }
+        }, value.content);
     }
 
     std::vector<u8> VDF::dump() const {

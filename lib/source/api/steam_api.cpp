@@ -25,12 +25,18 @@ namespace steam::api {
         if (!fs::copyFile(configPath / "shortcuts.vdf", configPath / "shortcuts.vdf.bak"))
             return std::nullopt;
 
+        // Generate AppID
+        auto appId = AppId(exePath, appName);
+
+        // Open shortcuts file
         auto shortcutsFile = fs::File(configPath / "shortcuts.vdf", fs::File::Mode::Write);
         if (!shortcutsFile.isValid())
             return std::nullopt;
 
+        // Parse shortcuts
         auto shortcuts = VDF(shortcutsFile.readBytes());
 
+        // Find the next free shortcut array index
         u32 nextShortcutId = 0;
         {
             for (const auto &[key, value] : shortcuts["shortcuts"].set()) {
@@ -42,8 +48,7 @@ namespace steam::api {
             nextShortcutId++;
         }
 
-        auto appId = AppId(exePath, appName);
-
+        // Add the new shortcut
         {
             VDF::Set shortcut;
             shortcut["AllowDesktopConfig"]  = true;
@@ -67,7 +72,8 @@ namespace steam::api {
             shortcuts["shortcuts"][std::to_string(nextShortcutId)] = shortcut;
         }
 
-        shortcutsFile.setSize(0);
+        // Dump the shortcut data back to the shortcuts file
+        shortcutsFile = fs::File(configPath / "shortcuts.vdf", fs::File::Mode::Create);
         shortcutsFile.write(shortcuts.dump());
 
         return appId;
