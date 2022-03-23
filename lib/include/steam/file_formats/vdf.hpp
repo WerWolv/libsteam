@@ -61,6 +61,21 @@ namespace steam {
             }
 
             [[nodiscard]]
+            bool isInteger() const {
+                return std::get_if<u32>(&content) != nullptr;
+            }
+
+            [[nodiscard]]
+            bool isString() const {
+                return std::get_if<std::string>(&content) != nullptr;
+            }
+
+            [[nodiscard]]
+            bool isSet() const {
+                return std::get_if<Set>(&content) != nullptr;
+            }
+
+            [[nodiscard]]
             Value& operator[](const std::string &key) & {
                 return std::get<Set>(content)[key];
             }

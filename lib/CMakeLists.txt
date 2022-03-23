@@ -11,6 +11,7 @@ add_library(libsteam SHARED
         source/file_formats/keyvalues.cpp
 
         source/helpers/file.cpp
+        source/helpers/utils.cpp
 )
 
 set_target_properties(libsteam
