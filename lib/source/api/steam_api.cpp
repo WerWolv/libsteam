@@ -11,27 +11,29 @@
 
 namespace steam::api {
 
-    std::optional<AppId> addGameShortcut(const User &user, const std::string &appName, const std::fs::path &exePath, const std::string &launchOptions) {
+    std::optional<AppId> addGameShortcut(const User &user, const std::string &appName, const std::fs::path &exePath, const std::string &launchOptions, const std::vector<std::string> &tags, bool hidden) {
         auto configPath = fs::getSteamDirectory() / "userdata" / std::to_string(user.getId()) / "config";
 
         // Create backup of original shortcuts file if there haven't been any modifications done by us yet
         if (!fs::exists(configPath / "shortcuts.vdf.orig"))
-            if (!fs::copyFile(configPath / "shortcuts.vdf", configPath / "shortcuts.vdf.orig"))
+            if (!fs::copyFile(configPath / "shortcuts.vdf", configPath / "shortcuts.vdf.orig")) {
                 return std::nullopt;
+            }
 
         // Create a backup of the current shortcuts file
-        if (!fs::remove(configPath / "shortcuts.vdf.bak"))
+        fs::remove(configPath / "shortcuts.vdf.bak");
+        if (!fs::copyFile(configPath / "shortcuts.vdf", configPath / "shortcuts.vdf.bak")) {
             return std::nullopt;
-        if (!fs::copyFile(configPath / "shortcuts.vdf", configPath / "shortcuts.vdf.bak"))
-            return std::nullopt;
+        }
 
         // Generate AppID
         auto appId = AppId(exePath, appName);
 
         // Open shortcuts file
         auto shortcutsFile = fs::File(configPath / "shortcuts.vdf", fs::File::Mode::Write);
-        if (!shortcutsFile.isValid())
+        if (!shortcutsFile.isValid()) {
             return std::nullopt;
+        }
 
         // Parse shortcuts
         auto shortcuts = VDF(shortcutsFile.readBytes());
@@ -50,6 +52,15 @@ namespace steam::api {
 
         // Add the new shortcut
         {
+            VDF::Set tagsSet;
+            {
+                u32 index = 0;
+                for (const auto &tag : tags) {
+                    tagsSet[std::to_string(index)] = tag;
+                    index++;
+                }
+            }
+
             VDF::Set shortcut;
             shortcut["AllowDesktopConfig"]  = true;
             shortcut["AllowOverlay"]        = true;
@@ -59,15 +70,15 @@ namespace steam::api {
             shortcut["DevkitOverrideAppID"] = false;
             shortcut["Exe"]                 = fmt::format("\"{0}\"", exePath.string());
             shortcut["FlatpakAppID"]        = "";
-            shortcut["IsHidden"]            = false;
+            shortcut["IsHidden"]            = hidden;
             shortcut["LastPlayTime"]        = 0;
-            shortcut["LaunchOptions"]       = "";
+            shortcut["LaunchOptions"]       = launchOptions;
             shortcut["OpenVR"]              = false;
             shortcut["ShortcutPath"]        = "";
             shortcut["StartDir"]            = fmt::format("\"{0}\"", exePath.parent_path().string());
             shortcut["appid"]               = appId.getShortAppId();
             shortcut["icon"]                = "";
-            shortcut["tags"]                = VDF::Set{ };
+            shortcut["tags"]                = tagsSet;
 
             shortcuts["shortcuts"][std::to_string(nextShortcutId)] = shortcut;
         }
