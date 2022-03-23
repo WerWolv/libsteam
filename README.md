@@ -46,3 +46,5 @@ auto binaryData = vdf.dump();
 // Print vdf as formatted data
 std::printf("%s", vdf.format().c_str());
 ```
+
+Check out the [/test](/test) folder for more examples
