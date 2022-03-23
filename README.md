@@ -9,7 +9,7 @@ A nice and easy to use C++ library to interact with Steam and its file formats. 
   - Adding new fields
   - Dumping back to binary representation
   - Pretty printing
-- KeyValue File parser (e.g config.vdf) 
+- KeyValue File parser (e.g config.vdf)
   - Parsing
   - Modifying fields
   - Adding new fields
@@ -18,8 +18,11 @@ A nice and easy to use C++ library to interact with Steam and its file formats. 
 - Interaction with the Steam Game UI
   - Restarting Game UI
   - Adding new shortcuts to Steam
-  - Enabling Proton for shortcuts 
-
+  - Removing shortcuts from Steam
+  - Enabling Proton for shortcuts
+- Querying the SteamGridDB API
+  - Searching
+  - Getting Grids, Heroes, Logos and Icons
 
 ## Example
 
