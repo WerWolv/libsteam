@@ -1,3 +1,9 @@
 [submodule "external/fmt"]
 	path = external/fmt
 	url = https://github.com/fmtlib/fmt
+[submodule "https://github.com/nlohmann/json"]
+	path = https://github.com/nlohmann/json
+	url = external/json
+[submodule "external/json"]
+	path = external/json
+	url = https://github.com/nlohmann/json

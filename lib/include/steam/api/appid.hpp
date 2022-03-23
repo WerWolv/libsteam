@@ -14,6 +14,8 @@ namespace steam::api {
 
     class AppId {
     public:
+        AppId() : m_appId(-1) { }
+
         AppId(const std::fs::path &exePath, const std::string &appName) noexcept
             : m_appId((u64(crc32(exePath.string() + appName) | 0x8000'0000) << 32) | 0x0200'0000) { }
 
