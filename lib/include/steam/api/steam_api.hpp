@@ -14,4 +14,5 @@ namespace steam::api {
     std::optional<AppId> addGameShortcut(const User &user, const std::string &appName, const std::fs::path &exePath, const std::string &launchOptions = "");
     bool enableProtonForApp(AppId appId, bool enabled);
 
+    bool restartSteam();
 }

@@ -6,8 +6,8 @@
 #include <steam/helpers/fs.hpp>
 #include <steam/helpers/file.hpp>
 
-
 #include <fmt/format.h>
+#include <signal.h>
 
 namespace steam::api {
 
@@ -114,5 +114,35 @@ namespace steam::api {
         return true;
     }
 
+    bool restartSteam() {
+        // Get status information of the current process
+        auto statFile = fs::File("/proc/self/stat", fs::File::Mode::Read);
+
+        do {
+            if (!statFile.isValid())
+                return false;
+
+            i32 pid;
+            char comm[0xFF];
+            char state;
+            i32 ppid;
+
+            // Parse stat data
+            fscanf(statFile.getHandle(), "%d %s %c %d", &pid, comm, &state, &ppid);
+
+            // Bail out when we reached the init process
+            if (ppid <= 1)
+                return false;
+
+            if (std::string(comm) == "(steam)") {
+                // If the steam executable is reached, kill it
+                kill(pid, SIGKILL);
+            }
+            else {
+                // If the executable isn't steam yet, read the stat file of the parent process
+                statFile = fs::File(fmt::format("/proc/{}/stat", ppid), fs::File::Mode::Read);
+            }
+        } while (true);
+    }
 
 }

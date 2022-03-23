@@ -2,7 +2,7 @@
 
 int main() {
 
-    auto users = steam::api::User::getUsers();
+    /*auto users = steam::api::User::getUsers();
     for (const auto &user : users) {
         printf("%d -> %s\n", user.getId(), user.getName().c_str());
     }
@@ -15,7 +15,9 @@ int main() {
 
     if (!steam::api::enableProtonForApp(*appId, true)) {
         printf("Failed to enable proton for app %d!\n", appId->getShortAppId());
-    }
+    }*/
+
+    steam::api::restartSteam();
 
     return EXIT_SUCCESS;
 }
